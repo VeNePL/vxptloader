@@ -1,0 +1,51 @@
+-- vxpt loader
+
+-- Loadsting & UI
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("VXPT LOADER", "Synapse")
+
+-- Main
+local Main = Window:NewTab("Menu")
+local MSection = Main:NewSection("Credits: vene_pl#7777")
+
+-- First
+local First = Window:NewTab("Script Hubs")
+local FSection = First:NewSection("Domain X")
+FSection:NewButton("Open Hub", "Execute DomainX Hub", function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/DomainX/main/source',true))()
+end)
+
+-- Second
+local Second = Window:NewTab("Scripts")
+local SSection = Second:NewSection("Project New World")
+SSection:NewButton("Open Script", "Execute PNW Script", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ZaRdoOx/Platinium/main/Loader"))()
+end)
+local SSection = Second:NewSection("Fly Race")
+SSection:NewButton("Open Script", "Execute FR Script", function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/1201for/littlegui/main/Bla_Race'))()
+end)
+
+-- Third
+local Third = Window:NewTab("Misc")
+local TSection = Third:NewSection("Miscellaneous")
+TSection:NewButton("Anti AFK", "Execute AntiAFK Script", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/JCBk5ieD"))()
+end)
+TSection:NewToggle("Speed 100", "Toggle Speed 100", function(state)
+    if state then
+        getgenv().WalkSpeedValue = 100;
+local Player = game:service'Players'.LocalPlayer;
+Player.Character.Humanoid:GetPropertyChangedSignal'WalkSpeed':Connect(function()
+Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+end)
+Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+    else
+        getgenv().WalkSpeedValue = 16;
+local Player = game:service'Players'.LocalPlayer;
+Player.Character.Humanoid:GetPropertyChangedSignal'WalkSpeed':Connect(function()
+Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+end)
+Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue;
+    end
+end)
