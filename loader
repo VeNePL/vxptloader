@@ -25,6 +25,10 @@ local SSection = Second:NewSection("Fly Race")
 SSection:NewButton("Open Script", "Execute FR Script", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/1201for/littlegui/main/Bla_Race'))()
 end)
+local SSection = Second:NewSection("Jailbreak")
+SSection:NewButton("Open Script", "Execute JB Script", function()
+    loadstring(game:HttpGet('https://scripts.luawl.com/14245/JailbreakerFree.lua'))()
+end)
 
 -- Third
 local Third = Window:NewTab("Misc")
