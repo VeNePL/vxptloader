@@ -1,4 +1,3 @@
-```lua
 local Depth
 local SellTreshold
 
@@ -222,4 +221,3 @@ while true do
     RunService:Wait()
 end
 end
-```
