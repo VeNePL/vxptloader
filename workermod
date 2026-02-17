@@ -78,11 +78,10 @@ part.Position = pos
 wait(1)
 HumanoidRootPart.Anchored = false
 while HumanoidRootPart.Position.Z > 26220 do
-    -- ZMIANA: Podniesiono z 13.05 na 14.5
+    -- Podniesiona wysokość przelotu
     HumanoidRootPart.CFrame = CFrame.new(Vector3.new(HumanoidRootPart.Position.X,14.5,HumanoidRootPart.Position.Z-0.5))
     wait()
 end
--- ZMIANA: Podniesiono z 10 na 11.5
 HumanoidRootPart.CFrame = CFrame.new(18, 11.5, 26220)
 end
 
@@ -114,21 +113,8 @@ end
 do
 local CoinsAmount = game.Players.LocalPlayer.leaderstats.Coins
 local function GetCoinsAmount()
-    local Amount = CoinsAmount.Value
-    Amount = Amount:gsub(',', '')
-    
-    return tonumber(Amount)
-end
-
-local function comma_value(amount)
-    local formatted = amount
-    while true do
-        formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
-        if (k==0) then
-            break
-        end
-    end
-    return formatted
+    local Amount = tostring(CoinsAmount.Value):gsub(',', '')
+    return tonumber(Amount) or 0
 end
 
 local function Split(s, delimiter)
@@ -138,6 +124,7 @@ local function Split(s, delimiter)
     end
     return result;
 end
+
 local recovering = false
 local DepthAmount = game.Players.LocalPlayer.PlayerGui.ScreenGui.TopInfoFrame.Depth
 DepthAmount.Changed:connect(function()
@@ -145,91 +132,65 @@ DepthAmount.Changed:connect(function()
     if tonumber(depth[1]) >= 1500 then
         recovering = true
         local HumanoidRootPart = game.Players.LocalPlayer.Character.HumanoidRootPart
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 0
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 0
         HumanoidRootPart.Anchored = true
         Remote:FireServer("MoveTo", {{"LavaSpawn"}})
-        local className = "Part"
-        local parent = game.Workspace
-        local part = Instance.new(className, parent)
-        part.Anchored = true
-        part.Size = Vector3.new(10, 0.5 , 100)
-        part.Material = "ForceField"
-        local pos = Vector3.new(21, 9.5, 26285)
-        part.Position = pos
         wait(1)
         HumanoidRootPart.Anchored = false
         while HumanoidRootPart.Position.Z > 26220 do
-            -- ZMIANA: Podniesiono z 13.05 na 14.5
             HumanoidRootPart.CFrame = CFrame.new(Vector3.new(HumanoidRootPart.Position.X,14.5,HumanoidRootPart.Position.Z-0.5))
             wait()
         end
-        -- ZMIANA: Podniesiono z 10 na 11.5
         HumanoidRootPart.CFrame = CFrame.new(18, 11.5, 26220)
         wait(5)
         recovering = false
     end
 end)
 
-
 local RebirthsAmount = game.Players.LocalPlayer.leaderstats.Rebirths
 game:GetService("RunService"):BindToRenderStep("Rebirth", Enum.RenderPriority.Camera.Value, function()
-    while GetCoinsAmount() >= (10000000 * (RebirthsAmount.Value + 1)) do
+    if GetCoinsAmount() >= (10000000 * (RebirthsAmount.Value + 1)) then
         Remote:FireServer("Rebirth",{{}})
-        wait()
     end
 end)
 
 local InventoryAmount = game.Players.LocalPlayer.PlayerGui.ScreenGui.StatsFrame2.Inventory.Amount
 local function GetInventoryAmount()
-    local Amount = InventoryAmount.Text
-    Amount = Amount:gsub('%s+', '')
-    Amount = Amount:gsub(',', '')
+    local Amount = InventoryAmount.Text:gsub('%s+', ''):gsub(',', '')
     local Inventory = Amount:split("/")
-    return tonumber(Inventory[1])
+    return tonumber(Inventory[1]) or 0
 end
 
 local RunService = game:GetService("RunService").Stepped
-local HumanoidRootPart = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 local Character = game.Players.LocalPlayer.Character
--- ZMIANA: Podniesiono Y w SellArea z 10.8 na 11.5
-local SellArea = CFrame.new(41.96064, 11.5, -1239.64648, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local SellArea = CFrame.new(41.96, 12, -1239.6)
+
 while true do
-    if HumanoidRootPart then
+    if HumanoidRootPart and not recovering then
         local minp = HumanoidRootPart.CFrame + Vector3.new(-10,-10,-10)
         local maxp = HumanoidRootPart.CFrame + Vector3.new(10,10,10)
         local region = Region3.new(minp.Position, maxp.Position)
-        local parts = workspace:FindPartsInRegion3WithWhiteList(region, {game.Workspace.Blocks}, 100) --  ignore part
+        local parts = workspace:FindPartsInRegion3WithWhiteList(region, {game.Workspace.Blocks}, 100)
+        
         for each, block in pairs(parts) do
             if block:IsA("BasePart") then
                 Remote:FireServer("MineBlock",{{block.Parent}})
-                repeat
-                    RunService:Wait()
-                until not recovering
-
+                RunService:Wait()
             end
+            
             if GetInventoryAmount() >= SellTreshold then
-                if Character then
-                    if HumanoidRootPart then
-                        local SavedPosition = HumanoidRootPart.Position
-                        while GetInventoryAmount() >= SellTreshold do
-                            HumanoidRootPart.CFrame = SellArea
-                            Remote:FireServer("SellItems",{{               }})
-                            RunService:Wait()
-                        end
-                        HumanoidRootPart.Anchored = true
-                        local starttime1 = os.time()
-                        while (HumanoidRootPart.Position - SavedPosition).Magnitude > 1 do
-                            -- ZMIANA: Powrót na osi Y lekko podniesiony
-                            HumanoidRootPart.CFrame = CFrame.new(18, SavedPosition.Y + 0.5, 26220)
-                            RunService:Wait()
-                            if os.time() - starttime1 > 5 then
-                                break
-                            end
-                        end
-                        HumanoidRootPart.Anchored = false
-                    end
+                local SavedPosition = HumanoidRootPart.CFrame -- Zapisujemy cały CFrame (pozycję i rotację)
+                
+                -- Teleportacja do sprzedaży
+                while GetInventoryAmount() >= SellTreshold do
+                    HumanoidRootPart.CFrame = SellArea
+                    Remote:FireServer("SellItems",{{}})
+                    RunService:Wait()
                 end
+                
+                -- Naprawiony powrót: ustawiamy postać i dajemy jej chwilę na "odmrożenie"
+                HumanoidRootPart.CFrame = SavedPosition
+                wait(0.2)
             end
         end
     end
