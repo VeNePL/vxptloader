@@ -1,3 +1,4 @@
+```lua
 local Depth
 local SellTreshold
 
@@ -210,16 +211,9 @@ while true do
                         Remote:FireServer("SellItems",{{}})
                         local startTime = os.time()
                         repeat RunService:Wait() until GetInventoryAmount() < SellTreshold or os.time() - startTime > 5  -- Timeout after 5 seconds
-                        HumanoidRootPart.Anchored = true
-                        local starttime1 = os.time()
-                        while (HumanoidRootPart.Position - SavedPosition).Magnitude > 1 do
-                            HumanoidRootPart.CFrame = CFrame.new(18, SavedPosition.Y, 26220)
-                            RunService:Wait()
-                            if os.time() - starttime1 > 5 then
-                                break
-                            end
-                        end
-                        HumanoidRootPart.Anchored = false
+                        -- Optimized teleportation: Direct teleport back to saved position
+                        HumanoidRootPart.CFrame = CFrame.new(SavedPosition)
+                        wait(0.1)  -- Small wait to ensure it sticks
                     end
                 end
             end
@@ -228,3 +222,4 @@ while true do
     RunService:Wait()
 end
 end
+```
